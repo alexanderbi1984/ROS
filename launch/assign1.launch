@@ -1,0 +1,5 @@
+<launch>
+		<node pkg="turtlesim" name="sim" type="turtlesim_node"/>
+		<node pkg="rostopic" name="tpc" type="rostopic" args="echo /turtle1/cmd_vel" output="log"/>
+		<node pkg="hw1" name="name" type="hw1.py"/> 	
+</launch>
