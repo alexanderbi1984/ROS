@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# license removed for brevity
-__author__ = 'fiorellasibona'
 import rospy
 import math
 
