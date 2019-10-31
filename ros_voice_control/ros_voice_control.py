@@ -39,9 +39,9 @@ class ASRControl(object):
         MODELDIR = "/usr/local/lib/python2.7/dist-packages/pocketsphinx/model"
         # initialize pocketsphinx
         config = Decoder.default_config()
-        config.set_string('-hmm', path.join(MODELDIR,'en-us'))
-        config.set_string('-dict', '/home/alex/catkin_ws/src/ROS/ros_voice_control/voice_cmd.dic')
-        config.set_string('-kws', '/home/alex/catkin_ws/src/ROS/ros_voice_control/voice_cmd.kwlist')
+        config.set_string('-hmm', model)
+        config.set_string('-dict', lexicon)
+        config.set_string('-kws', kwlist)
 
         stream = pyaudio.PyAudio().open(format=pyaudio.paInt16, channels=1,
                         rate=16000, input=True, frames_per_buffer=1024)
@@ -115,9 +115,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Control ROS turtlebot using pocketsphinx.')
     parser.add_argument('--model', type=str,
-        default='/usr/share/pocketsphinx/model/hmm/en_US/hub4wsj_sc_8k',
+        default='/usr/local/lib/python2.7/dist-packages/pocketsphinx/model/en-us',
         help='''acoustic model path
-        (default: /usr/share/pocketsphinx/model/hmm/en_US/hub4wsj_sc_8k)''')
+        (default: /usr/local/lib/python2.7/dist-packages/pocketsphinx/model/eu-us)''')
     parser.add_argument('--lexicon', type=str,
         default='voice_cmd.dic',
         help='''pronunciation dictionary
