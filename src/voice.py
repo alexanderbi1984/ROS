@@ -4,7 +4,7 @@
 for ROS turtlebot using pocketsphinx
 """
 
-import argparse
+#import argparse
 import roslib
 import rospy
 from os import path
@@ -32,7 +32,7 @@ class ASRControl(object):
         pub: where to send commands (default: 'mobile_base/commands/velocity')
 
     """
-    def __init__(self, model, lexicon, kwlist, pub):
+    def __init__(self):
         # initialize ROS
         self.speed = 0.2
         self.msg = Twist()
@@ -51,7 +51,12 @@ class ASRControl(object):
         rospy.loginfo("Connected to move base server")
 
         # you may need to change publisher destination depending on what you run
+        pub = 'mobile_base/commands/velocity'
         self.pub_ = rospy.Publisher(pub, Twist, queue_size=10)
+        # setting up the necessary parameters for sphinx
+        model = '/usr/local/lib/python2.7/dist-packages/pocketsphinx/model/en-us'
+        lexicon = '/home/alex/catkin_ws/src/ROS/src/voice_cmd.dic'
+        kwlist = '/home/alex/catkin_ws/src/ROS/src/voice_cmd.kwlist'
         # initialize pocketsphinx
         config = Decoder.default_config()
         config.set_string('-hmm', model)
@@ -150,25 +155,28 @@ class ASRControl(object):
         rospy.sleep(1)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='Control ROS turtlebot using pocketsphinx.')
-    parser.add_argument('--model', type=str,
-        default='/usr/local/lib/python2.7/dist-packages/pocketsphinx/model/en-us',
-        help='''acoustic model path
-        (default: /usr/local/lib/python2.7/dist-packages/pocketsphinx/model/eu-us)''')
-    parser.add_argument('--lexicon', type=str,
-        default='voice_cmd.dic',
-        help='''pronunciation dictionary
-        (default: voice_cmd.dic)''')
-    parser.add_argument('--kwlist', type=str,
-        default='voice_cmd.kwlist',
-        help='''keyword list with thresholds
-        (default: voice_cmd.kwlist)''')
-    parser.add_argument('--rospub', type=str,
-        default='mobile_base/commands/velocity',
-        help='''ROS publisher destination
-        (default: mobile_base/commands/velocity)''')
+    # parser = argparse.ArgumentParser(
+    #     description='Control ROS turtlebot using pocketsphinx.')
+    # parser.add_argument('--model', type=str,
+    #     default='/usr/local/lib/python2.7/dist-packages/pocketsphinx/model/en-us',
+    #     help='''acoustic model path
+    #     (default: /usr/local/lib/python2.7/dist-packages/pocketsphinx/model/eu-us)''')
+    # parser.add_argument('--lexicon', type=str,
+    #     default='voice_cmd.dic',
+    #     help='''pronunciation dictionary
+    #     (default: voice_cmd.dic)''')
+    # parser.add_argument('--kwlist', type=str,
+    #     default='voice_cmd.kwlist',
+    #     help='''keyword list with thresholds
+    #     (default: voice_cmd.kwlist)''')
+    # parser.add_argument('--rospub', type=str,
+    #     default='mobile_base/commands/velocity',
+    #     help='''ROS publisher destination
+    #     (default: mobile_base/commands/velocity)''')
 
-    args = parser.parse_args()
-    ASRControl(args.model, args.lexicon, args.kwlist, args.rospub)
+    # args = parser.parse_args()
+    #ASRControl(args.model, args.lexicon, args.kwlist, args.rospub)
+    ASRControl()
+
+
 
