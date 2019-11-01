@@ -34,7 +34,7 @@ class ASRControl(object):
     """
     def __init__(self):
         # initialize ROS
-        self.speed = 0.2
+        self.speed = 0.1
         self.msg = Twist()
 
         rospy.init_node('voice_cmd')
@@ -55,8 +55,8 @@ class ASRControl(object):
         self.pub_ = rospy.Publisher(pub, Twist, queue_size=10)
         # setting up the necessary parameters for sphinx
         model = '/usr/local/lib/python2.7/dist-packages/pocketsphinx/model/en-us'
-        lexicon = '/home/alex/catkin_ws/src/ROS/src/voice_cmd.dic'
-        kwlist = '/home/alex/catkin_ws/src/ROS/src/voice_cmd.kwlist'
+        lexicon = '/home/nbi1/catkin_ws/src/BiN/src/voice_cmd.dic'
+        kwlist = '/home/nbi1/catkin_ws/src/BiN/src/voice_cmd.kwlist'
         # initialize pocketsphinx
         config = Decoder.default_config()
         config.set_string('-hmm', model)
@@ -128,22 +128,22 @@ class ASRControl(object):
                 self.msg.angular.z = 0
             if seg.word.find("stop") > -1 or seg.word.find("halt") > -1:
                 self.msg = Twist()
-            if seg.word.find("one") > -1:
-                self.soundhandle.say("confirm")
-                rospy.sleep(1)
-                if seg.word.find("yes"):
-                    self.soundhandle.say("Go to position one")
-                    goal.target_pose.header.frame_id = "map"
-                    goal.target_pose.header.stamp = rospy.Time.now()
-                    quat = quaternion_from_euler(0, 0, 0) 
-                    goal.target_pose.pose.position.x = 3.93
-                    goal.target_pose.pose.position.y = 0.976
-                    goal.target_pose.pose.position.z = 0
-                    goal.target_pose.pose.orientation.x = quat[0]
-                    goal.target_pose.pose.orientation.y = quat[1]
-                    goal.target_pose.pose.orientation.z = quat[2]
-                    goal.target_pose.pose.orientation.w = quat[3]
-                    self.client.send_goal(goal)
+            #if seg.word.find("one") > -1:
+                #self.soundhandle.say("confirm")
+                #rospy.sleep(1)
+                #if seg.word.find("yes"):
+                 #   self.soundhandle.say("Go to position one")
+                  #  goal.target_pose.header.frame_id = "map"
+                   # goal.target_pose.header.stamp = rospy.Time.now()
+                    #quat = quaternion_from_euler(0, 0, 0) 
+                    #goal.target_pose.pose.position.x = -3.56
+                    #goal.target_pose.pose.position.y = 1.67
+                    #goal.target_pose.pose.position.z = 0
+                    #goal.target_pose.pose.orientation.x = quat[0]
+                    #goal.target_pose.pose.orientation.y = quat[1]
+                    #goal.target_pose.pose.orientation.z = quat[2]
+                    #goal.target_pose.pose.orientation.w = quat[3]
+                    #self.client.send_goal(goal)
         self.pub_.publish(self.msg)
 
     def shutdown(self):
