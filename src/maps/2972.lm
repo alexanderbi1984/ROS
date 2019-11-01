@@ -1,0 +1,91 @@
+Language model created by QuickLM on Thu Oct 31 21:36:54 EDT 2019
+Copyright (c) 1996-2010 Carnegie Mellon University and Alexander I. Rudnicky
+
+The model is in standard ARPA format, designed by Doug Paul while he was at MITRE.
+
+The code that was used to produce this language model is available in Open Source.
+Please visit http://www.speech.cs.cmu.edu/tools/ for more information
+
+The (fixed) discount mass is 0.5. The backoffs are computed using the ratio method.
+This model based on a corpus of 12 sentences and 19 words
+
+\data\
+ngram 1=19
+ngram 2=29
+ngram 3=20
+
+\1-grams:
+-0.8653 </s> -0.3010
+-0.8653 <s> -0.2374
+-1.9445 AHEAD -0.2374
+-1.9445 BACK -0.2374
+-1.9445 FORWARD -0.2374
+-1.9445 FULL -0.2910
+-1.9445 GO -0.2961
+-1.9445 HAFL -0.2910
+-1.9445 HALT -0.2374
+-1.9445 LEFT -0.2374
+-1.6435 MOVE -0.2910
+-1.9445 NO -0.2374
+-1.9445 ONE -0.2374
+-1.9445 POSITION -0.2961
+-1.9445 RIGHT -0.2374
+-1.6435 SPEED -0.2374
+-1.9445 STOP -0.2374
+-1.6435 TURN -0.2910
+-1.9445 YES -0.2374
+
+\2-grams:
+-1.3802 <s> FULL 0.0000
+-1.3802 <s> GO 0.0000
+-1.3802 <s> HAFL 0.0000
+-1.3802 <s> HALT 0.0000
+-1.0792 <s> MOVE 0.0000
+-1.3802 <s> NO 0.0000
+-1.3802 <s> POSITION 0.0000
+-1.3802 <s> STOP 0.0000
+-1.0792 <s> TURN 0.0000
+-1.3802 <s> YES 0.0000
+-0.3010 AHEAD </s> -0.3010
+-0.3010 BACK </s> -0.3010
+-0.3010 FORWARD </s> -0.3010
+-0.3010 FULL SPEED 0.0000
+-0.3010 GO AHEAD 0.0000
+-0.3010 HAFL SPEED 0.0000
+-0.3010 HALT </s> -0.3010
+-0.3010 LEFT </s> -0.3010
+-0.6021 MOVE BACK 0.0000
+-0.6021 MOVE FORWARD 0.0000
+-0.3010 NO </s> -0.3010
+-0.3010 ONE </s> -0.3010
+-0.3010 POSITION ONE 0.0000
+-0.3010 RIGHT </s> -0.3010
+-0.3010 SPEED </s> -0.3010
+-0.3010 STOP </s> -0.3010
+-0.6021 TURN LEFT 0.0000
+-0.6021 TURN RIGHT 0.0000
+-0.3010 YES </s> -0.3010
+
+\3-grams:
+-0.3010 <s> FULL SPEED
+-0.3010 <s> GO AHEAD
+-0.3010 <s> HAFL SPEED
+-0.3010 <s> HALT </s>
+-0.6021 <s> MOVE BACK
+-0.6021 <s> MOVE FORWARD
+-0.3010 <s> NO </s>
+-0.3010 <s> POSITION ONE
+-0.3010 <s> STOP </s>
+-0.6021 <s> TURN LEFT
+-0.6021 <s> TURN RIGHT
+-0.3010 <s> YES </s>
+-0.3010 FULL SPEED </s>
+-0.3010 GO AHEAD </s>
+-0.3010 HAFL SPEED </s>
+-0.3010 MOVE BACK </s>
+-0.3010 MOVE FORWARD </s>
+-0.3010 POSITION ONE </s>
+-0.3010 TURN LEFT </s>
+-0.3010 TURN RIGHT </s>
+
+\end\

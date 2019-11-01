@@ -8,12 +8,18 @@ import argparse
 import roslib
 import rospy
 from os import path
+import math
+import actionlib
+from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+from actionlib_msgs.msg import GoalStatus
 
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist,Pose,Point,Quaternion
+from tf.transformations import quaternion_from_euler
 
 from pocketsphinx.pocketsphinx import *
 from sphinxbase.sphinxbase import *
 import pyaudio
+from sound_play.libsoundplay import SoundClient
 
 
 class ASRControl(object):
@@ -31,12 +37,21 @@ class ASRControl(object):
         self.speed = 0.2
         self.msg = Twist()
 
-        rospy.init_node('voice_cmd_vel')
+        rospy.init_node('voice_cmd')
         rospy.on_shutdown(self.shutdown)
+        self.client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
+        self.soundhandle = SoundClient()
+
+        rospy.loginfo("Waiting for move_base action server")
+        wait = self.client.wait_for_server(rospy.Duration(5.0))
+        if not wait:
+            rospy.logerr("Action server not available!")
+            rospy.signal_shutdown("Action server not available!")
+            return
+        rospy.loginfo("Connected to move base server")
 
         # you may need to change publisher destination depending on what you run
         self.pub_ = rospy.Publisher(pub, Twist, queue_size=10)
-        MODELDIR = "/usr/local/lib/python2.7/dist-packages/pocketsphinx/model"
         # initialize pocketsphinx
         config = Decoder.default_config()
         config.set_string('-hmm', model)
@@ -57,6 +72,8 @@ class ASRControl(object):
             else:
                 break
             self.parse_asr_result()
+            
+        
 
     def parse_asr_result(self):
         """
@@ -69,6 +86,8 @@ class ASRControl(object):
             seg.word = seg.word.lower()
             self.decoder.end_utt()
             self.decoder.start_utt()
+            goal = MoveBaseGoal()
+
             # you may want to modify the main logic here
             if seg.word.find("full speed") > -1:
                 if self.speed == 0.2:
@@ -80,29 +99,46 @@ class ASRControl(object):
                     self.msg.linear.x = self.msg.linear.x/2
                     self.msg.angular.z = self.msg.angular.z/2
                     self.speed = 0.2
-            if seg.word.find("forward") > -1:
+            if seg.word.find("forward") > -1 or seg.word.find("ahead") > -1:
+                self.soundhandle.say("Go Forward")
                 self.msg.linear.x = self.speed
                 self.msg.angular.z = 0
-            elif seg.word.find("left") > -1:
+            if seg.word.find("left") > -1:
+                self.soundhandle.say("turn left")
                 if self.msg.linear.x != 0:
                     if self.msg.angular.z < self.speed:
                         self.msg.angular.z += 0.05
                 else:
                     self.msg.angular.z = self.speed*2
-            elif seg.word.find("right") > -1:
+            if seg.word.find("right") > -1:
+                self.soundhandle.say("turn right")
                 if self.msg.linear.x != 0:
                     if self.msg.angular.z > -self.speed:
                         self.msg.angular.z -= 0.05
                 else:
                     self.msg.angular.z = -self.speed*2
-            elif seg.word.find("back") > -1:
+            if seg.word.find("back") > -1:
+                self.soundhandle.say("move back")
                 self.msg.linear.x = -self.speed
                 self.msg.angular.z = 0
-            elif seg.word.find("stop") > -1 or seg.word.find("halt") > -1:
+            if seg.word.find("stop") > -1 or seg.word.find("halt") > -1:
                 self.msg = Twist()
-            
-
-
+            if seg.word.find("one") > -1:
+                self.soundhandle.say("confirm")
+                rospy.sleep(1)
+                if seg.word.find("yes"):
+                    self.soundhandle.say("Go to position one")
+                    goal.target_pose.header.frame_id = "map"
+                    goal.target_pose.header.stamp = rospy.Time.now()
+                    quat = quaternion_from_euler(0, 0, 0) 
+                    goal.target_pose.pose.position.x = 3.93
+                    goal.target_pose.pose.position.y = 0.976
+                    goal.target_pose.pose.position.z = 0
+                    goal.target_pose.pose.orientation.x = quat[0]
+                    goal.target_pose.pose.orientation.y = quat[1]
+                    goal.target_pose.pose.orientation.z = quat[2]
+                    goal.target_pose.pose.orientation.w = quat[3]
+                    self.client.send_goal(goal)
         self.pub_.publish(self.msg)
 
     def shutdown(self):

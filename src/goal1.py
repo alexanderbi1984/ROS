@@ -15,8 +15,10 @@ class MoveBaseSeq():
 
         rospy.init_node('move_base_sequence')
         points_seq = rospy.get_param('move_base_seq/p_seq')
+        #points_seq = [3.93,0.976,0]
         # Only yaw angle required (no ratotions around x and y axes) in deg:
         yaweulerangles_seq = rospy.get_param('move_base_seq/yea_seq')
+        #yaweulerangles_seq = [0,0,0]
         #List of goal quaternions:
         quat_seq = list()
         #List of goal poses:
