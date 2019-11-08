@@ -8,6 +8,7 @@ import cv2
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
+import numpy as np
 
 class image_converter:
 
@@ -22,11 +23,17 @@ class image_converter:
       cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
     except CvBridgeError as e:
       print(e)
-
-    (rows,cols,channels) = cv_image.shape
-    if cols > 60 and rows > 60 :
-      cv2.circle(cv_image, (50,50), 10, 255)
-
+    gray_image = cv2.cvtColor(cv_image,cv2.COLOR_BGR2GRAY)
+    blur = cv2.medianBlur(gray_image, 5)
+    circles = cv2.HoughCircles(blur,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=30,minRadius=40,maxRadius=100)
+    circles = np.uint16(np.around(circles))
+    for i in circles[0,:]:
+                # if radius > 1 consider it as a ball
+                if i[2]>1:
+                    #self.location[0] = i[0]
+                    #self.location[1] = i[1]
+                    cv2.circle(cv_image,(i[0],i[1]),i[2],(0,255,0),2)
+                    cv2.circle(cv_image,(i[0],i[1]),2,(0,0,255),3)
     cv2.imshow("Image window", cv_image)
     cv2.waitKey(3)
 
