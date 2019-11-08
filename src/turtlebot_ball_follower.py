@@ -40,6 +40,10 @@ class follower:
         except CvBridgeError as e:
             print(e)
         if all(x is not None for x in self.location):
+            print(x)
+if __name__ == '__main__':
+    it = follower()
+    it.img_cb()
             
 
 
