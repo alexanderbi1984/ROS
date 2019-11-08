@@ -23,8 +23,8 @@ class follower:
             print(e)
             # Gaussian Blur if needed
             gray_img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-            
-            circles = cv2.HoughCircles(gray_img,cv2.HOUGH_GRADIENT,1,20,param1=50,param2=30,minRadius=0,maxRadius=0)
+            blur = cv2.medianBlur(gray_img, 5)
+            circles = cv2.HoughCircles(blur,cv2.HOUGH_GRADIENT,1,50,param1=50,param2=30,minRadius=0,maxRadius=50)
             circles = np.uint16(np.around(circles))
             for i in circles[0,:]:
                 # if radius > 1 consider it as a ball
