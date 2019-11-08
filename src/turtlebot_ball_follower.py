@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 import roslib
 import sys
 import rospy
@@ -9,10 +10,11 @@ import numpy as np
 class follower:
     def __init__(self):
         #self.pub_ = rospy.Publisher('/cmd_vel_mux/input/navi', Twist, queue_size=10)
+	rospy.init_node('follower',anonymous=True)
         self.bridge = CvBridge()
         self.pub_image = rospy.Publisher('/image_converter/output_video',Image,queue_size = 10)
-        self.sub_image = rospy.Subscriber('/camera/rgb/image_color', Image, img_cb)
-        self.sub_depth = rospy.Subscriber('/camera/depth/image_raw', Image, dep_cb)
+        self.sub_image = rospy.Subscriber('/camera/rgb/image_raw', Image, self.img_cb)
+        self.sub_depth = rospy.Subscriber('/camera/depth/image_raw', Image, self.dep_cb)
         self.location = [None,None,None]
     def img_cb(self,msg):
         try:
@@ -43,7 +45,7 @@ class follower:
             print(x)
 if __name__ == '__main__':
     it = follower()
-    it.img_cb()
+    rospy.spin()
             
 
 
