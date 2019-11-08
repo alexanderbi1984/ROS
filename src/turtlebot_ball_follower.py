@@ -33,19 +33,28 @@ class follower:
                     self.location[1] = i[1]
                     cv2.circle(img,(i[0],i[1]),i[2],(0,255,0),2)
                     cv2.circle(img,(i[0],i[1]),2,(0,0,255),3)
-            cv2.imshow('detected ball',img)
+            cv2.imshow(“detected ball”,img)
             cv2.waitkey(3)
-            self.pub_image.publish(self.bridge.cv2_to_imgmsg(img,'bgr8'))
-    def dep_cb(self,msg):
-        try:
-            img = self.bridge.imgmsg_to_cv2(msg)
-        except CvBridgeError as e:
-            print(e)
-        if all(x is not None for x in self.location):
-            print(x)
-if __name__ == '__main__':
-    it = follower()
+            self.pub_image.publish(self.bridge.cv2_to_imgmsg(img,"bgr8"))
+    #def dep_cb(self,msg):
+    #    try:
+    #        img = self.bridge.imgmsg_to_cv2(msg)
+    #    except CvBridgeError as e:
+    #        print(e)
+    #    if all(x is not None for x in self.location):
+    #       print(x)
+def main(args):
+  fl = follower()
+  rospy.init_node('follower', anonymous=True)
+  try:
     rospy.spin()
+  except KeyboardInterrupt:
+    print("Shutting down")
+  cv2.destroyAllWindows()
+
+if __name__ == '__main__':
+    main(sys.argv)
+
             
 
 
