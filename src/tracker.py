@@ -10,10 +10,10 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 
-class image_converter:
+class tracker:
 
   def __init__(self):
-    self.image_pub = rospy.Publisher("/image_bn",Image,queue_size = 10)
+    #self.image_pub = rospy.Publisher("/image_bn",Image,queue_size = 10)
     self.coord_pub = rospy.Publisher("coord",String, queue_size = 10)
     self.bridge = CvBridge()
     self.image_sub = rospy.Subscriber("/camera/rgb/image_raw",Image,self.callback)
@@ -26,6 +26,7 @@ class image_converter:
     gray_image = cv2.cvtColor(cv_image,cv2.COLOR_BGR2GRAY)
     blur = cv2.medianBlur(gray_image, 5)
     circles = cv2.HoughCircles(blur,cv2.HOUGH_GRADIENT,1,170,param1=50,param2=30,minRadius=40,maxRadius=100)
+    #circles = cv2.HoughCircles(blur,cv2.HOUGH_GRADIENT,1,170,param1=50,param2=30,minRadius=0,maxRadius=100)
     circles = np.uint16(np.around(circles))
     for i in circles[0,0:1]:
                 # if radius > 1 consider it as a ball
@@ -45,8 +46,8 @@ class image_converter:
       print(e)
 
 def main(args):
-  ic = image_converter()
-  rospy.init_node('image_converter', anonymous=True)
+  ic = tracker()
+  rospy.init_node('tracker', anonymous=True)
   try:
     rospy.spin()
   except KeyboardInterrupt:
