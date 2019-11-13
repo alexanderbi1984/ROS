@@ -47,9 +47,9 @@ class Follower():
                     angular_z_vel = 0
                 #find out if turtlebot need forward or backward
                 diff_z = self.tracking_coord[2] - 1000
-                if diff_z > 0.01:
+                if diff_z > 10:
                     x_vel = 0.05
-                elif diff_z <-0.01:
+                elif diff_z <-10:
                     x_vel = -0.05
                 else:
                     x_vel = 0
