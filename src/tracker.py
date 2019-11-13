@@ -27,8 +27,10 @@ class tracker:
       print(e)
     gray_image = cv2.cvtColor(cv_image,cv2.COLOR_BGR2GRAY)
     blur = cv2.medianBlur(gray_image, 5)
-    circles = cv2.HoughCircles(blur,cv2.HOUGH_GRADIENT,1,170,param1=50,param2=30,minRadius=40,maxRadius=100)
+    circles = cv2.HoughCircles(blur,cv2.HOUGH_GRADIENT,1,150,param1=50,param2=30,minRadius=40,maxRadius=100)
     #circles = cv2.HoughCircles(blur,cv2.HOUGH_GRADIENT,1,170,param1=50,param2=30,minRadius=0,maxRadius=100)
+
+      
     circles = np.uint16(np.around(circles))
     for i in circles[0,0:1]:
                 # if radius > 1 consider it as a ball
@@ -37,45 +39,53 @@ class tracker:
                     #self.location[1] = i[1]
                     cv2.circle(cv_image,(i[0],i[1]),i[2],(0,255,0),2)
                     cv2.circle(cv_image,(i[0],i[1]),2,(0,0,255),3)
-		    #location = "{},{},{}".format(i[0],i[1],i[2])
-        self.tracked[0] = i[0]
-        self.tracked[1] = i[1]
-        self.tracked[2] = i[2]
+		    location = "{},{},{}".format(i[0],i[1],i[2])
+                    self.tracked[0] = i[0]
+                    self.tracked[1] = i[1]
+                    self.tracked[2] = i[2]
     cv2.imshow("Image window", cv_image)
     cv2.waitKey(3)
+    #print(self.tracked)
     #self.coord_pub.publish(location)
 
-    try:
-      self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
-    except CvBridgeError as e:
-      print(e)
-def dep_cb(self,data):
+    #try:
+    #  self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
+    #except CvBridgeError as e:
+    #  print(e)
+  def dep_cb(self,data):
     try:
       dep_image = self.bridge.imgmsg_to_cv2(data)
     except CvBridgeError as e:
       print(e)
     arr = np.array(dep_image,dtype=np.float32)
+    
     #rotate the image about y-axis
     #arr = cv2.flip(arr,1)
     if any(x is None for x in self.tracked[0:2]):
-      return
+      print(self.tracked)
+      #return
     else:
+      #print(self.tracked)
       # to avoid the case when the center of the ball has depth nan, we take average depth of the ball
       zz = []
-      r2 = self.tracked[2]
+      r2 = int(self.tracked[2])
+      #print(range(-int(r2),int(r2)))
       for dx in range(-r2,r2):
+        #print("dsad")
         for dy in range(-r2,r2):
           try:
             z = arr[self.tracked[0]+dx,self.tracked[1]+dy]
+            #print(z)
           except:
             continue
-          if not(isnan(z) or z == 0.0):
+          if not(np.isnan(z) or z == 0.0):
             zz.append(z)
-      if len(zz) < 1:
-        return
-      self.tracked = np.mean(zz)
-      location = "{},{},{}".format(self.tracked[0],self.tracked[1],self.tracked[2])
-      self.coord_pub.publish(location)
+      #print(len(zz))
+      if len(zz) >= 1:
+        self.tracked[2] = np.mean(zz)
+        location = "{},{},{}".format(self.tracked[0],self.tracked[1],self.tracked[2])
+        print(location)
+        self.coord_pub.publish(location)
 
 def main(args):
   ic = tracker()
