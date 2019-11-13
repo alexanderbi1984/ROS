@@ -67,25 +67,26 @@ class tracker:
     else:
       #print(self.tracked)
       # to avoid the case when the center of the ball has depth nan, we take average depth of the ball
-      zz = []
-      r2 = int(self.tracked[2])
+      #zz = []
+      #r2 = int(self.tracked[2])
       #print(range(-int(r2),int(r2)))
-      for dx in range(-r2,r2):
+      #for dx in range(-r2,r2):
         #print("dsad")
-        for dy in range(-r2,r2):
-          try:
-            z = arr[self.tracked[0]+dx,self.tracked[1]+dy]
+      #  for dy in range(-r2,r2):
+      #    try:
+      #      z = arr[self.tracked[0]+dx,self.tracked[1]+dy]
             #print(z)
-          except:
-            continue
-          if not(np.isnan(z) or z == 0.0):
-            zz.append(z)
+      #    except:
+      #      continue
+      #    if not(np.isnan(z) or z == 0.0):
+      #      zz.append(z)
       #print(len(zz))
-      if len(zz) >= 1:
-        self.tracked[2] = np.mean(zz)
-        location = "{},{},{}".format(self.tracked[0],self.tracked[1],self.tracked[2])
-        print(location)
-        self.coord_pub.publish(location)
+      #if len(zz) >= 1:
+      #  self.tracked[2] = np.mean(zz)
+      self.tracked[2] = arr[self.tracked[0],self.tracked[1]]
+      location = "{},{},{}".format(self.tracked[0],self.tracked[1],self.tracked[2])
+      print(location)
+      self.coord_pub.publish(location)
 
 def main(args):
   ic = tracker()
