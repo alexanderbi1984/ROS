@@ -84,7 +84,7 @@ class tracker:
       #if len(zz) >= 1:
       #  self.tracked[2] = np.mean(zz)
       self.tracked[2] = arr[self.tracked[0],self.tracked[1]]
-      location = "{},{},{}".format(self.tracked[0],self.tracked[1],self.tracked[2])
+      location = '{},{},{}'.format(self.tracked[0],self.tracked[1],self.tracked[2])
       print(location)
       self.coord_pub.publish(location)
 

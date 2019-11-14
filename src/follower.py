@@ -9,18 +9,18 @@ from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
-from geometry_msgs.msg imoport Twist
+from geometry_msgs.msg import Twist
 
-class Follower():
+class follower():
     def __init__(self):
         #initialize the node
         rospy.init_node('follower',anonymous=False)
         rospy.on_shutdown(self.shutdown)
         #publisher to publish speed to turtlebot
-        self.cmd_vel = rospy.Publsiher('/cmd_vel_mux/input/navi',Twist,queue_size = 10)
+        self.cmd_vel = rospy.Publisher('/cmd_vel_mux/input/navi',Twist,queue_size = 10)
         #subscribing the coordinate information got from tracker node.
         #3 coordinates: x,y,radius of the circle detected
-        self.coord_sub = rospy.Subscriber('/coord',String,self.coord_cb)
+        self.coord_sub = rospy.Subscriber('/coord',String,self.coord_sub)
         self.tracking_coord = None
         #wait for some valid data to come in
         while self.tracking_coord is None:
@@ -39,6 +39,7 @@ class Follower():
             if self.tracking_coord[0] is not None:
                 #find out if turtlebot need turn
                 diff_x = self.tracking_coord[1] - 320
+		print(diff_x)
                 if diff_x > 20:
                     angular_z_vel = 0.4
                 if diff_x < -20:
@@ -65,7 +66,8 @@ class Follower():
 
 
     def coord_sub(self,data):
-        coord = [float(x) for x in str(data).split(',')]
+	print(data.data)
+        coord = [float(x) for x in str(data.data).split(',')]
         self.tracking_coord = coord
 
 def main(args):
