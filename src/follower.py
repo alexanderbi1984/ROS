@@ -38,19 +38,19 @@ class follower():
         while not rospy.is_shutdown():
             if self.tracking_coord[0] is not None:
                 #find out if turtlebot need turn
-                diff_x = self.tracking_coord[1] - 320
+                diff_x = self.tracking_coord[0] - 320
 		print(diff_x)
-                if diff_x > 30:
-                    angular_z_vel = -0.2
-                if diff_x < -30:
-                    angular_z_vel = 0.2
-                if diff_x >=-30 and diff_x <=30:
+                if diff_x > 50:
+                    angular_z_vel = -0.3
+                if diff_x < -50:
+                    angular_z_vel = 0.3
+                if diff_x >=-50 and diff_x <=50:
                     angular_z_vel = 0
                 #find out if turtlebot need forward or backward
                 diff_z = self.tracking_coord[2] - 1000
-                if diff_z > 100:
+                if diff_z > 50:
                     x_vel = 0.06
-                elif diff_z <-100:
+                elif diff_z <-50:
                     x_vel = -0.06
                 else:
                     x_vel = 0
