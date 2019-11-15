@@ -66,7 +66,7 @@ class follower():
 
 
     def coord_sub(self,data):
-	print(data.data)
+	#print(data.data)
         coord = [float(x) for x in str(data.data).split(',')]
         self.tracking_coord = coord
 
