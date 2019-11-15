@@ -28,7 +28,7 @@ class follower():
 
         # TurtleBot will stop if we don't keep telling it to move. 
         # Therefore, we need set up the rate to 10 HZ.
-        r = rospy.Rate(10)
+        r = rospy.Rate(5)
         move_cmd = Twist()
         # unit for linear movement is m/s
         move_cmd.linear.x = 0 
@@ -40,18 +40,18 @@ class follower():
                 #find out if turtlebot need turn
                 diff_x = self.tracking_coord[1] - 320
 		print(diff_x)
-                if diff_x > 20:
-                    angular_z_vel = 0.4
-                if diff_x < -20:
-                    angular_z_vel = -0.4
-                if diff_x >=-20 and diff_x <=20:
+                if diff_x > 30:
+                    angular_z_vel = -0.2
+                if diff_x < -30:
+                    angular_z_vel = 0.2
+                if diff_x >=-30 and diff_x <=30:
                     angular_z_vel = 0
                 #find out if turtlebot need forward or backward
                 diff_z = self.tracking_coord[2] - 1000
-                if diff_z > 10:
-                    x_vel = 0.05
-                elif diff_z <-10:
-                    x_vel = -0.05
+                if diff_z > 100:
+                    x_vel = 0.06
+                elif diff_z <-100:
+                    x_vel = -0.06
                 else:
                     x_vel = 0
                 print("Move foward vel {}, angular vel {}".format(x_vel,angular_z_vel))

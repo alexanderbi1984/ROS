@@ -27,14 +27,14 @@ class tracker:
       print(e)
     gray_image = cv2.cvtColor(cv_image,cv2.COLOR_BGR2GRAY)
     blur = cv2.medianBlur(gray_image, 5)
-    circles = cv2.HoughCircles(blur,cv2.HOUGH_GRADIENT,1,150,param1=50,param2=30,minRadius=40,maxRadius=100)
+    circles = cv2.HoughCircles(blur,cv2.HOUGH_GRADIENT,1,170,param1=50,param2=30,minRadius=30,maxRadius=100)
     #circles = cv2.HoughCircles(blur,cv2.HOUGH_GRADIENT,1,170,param1=50,param2=30,minRadius=0,maxRadius=100)
 
       
     circles = np.uint16(np.around(circles))
     for i in circles[0,0:1]:
-                # if radius > 1 consider it as a ball
-                if i[2]>1:
+                # if radius > 1 consider it as a ball,
+                #if i[0]>100 and i[1] < 380 and i[1]>100 and i[0]<540:
                     #self.location[0] = i[0]
                     #self.location[1] = i[1]
                     cv2.circle(cv_image,(i[0],i[1]),i[2],(0,255,0),2)
@@ -58,10 +58,17 @@ class tracker:
     except CvBridgeError as e:
       print(e)
     r2 = int(self.tracked[2])
-    blur = cv2.medianBlur(dep_image, r2)
-    arr = np.array(blur,dtype=np.float32)
-    #arr = np.array(dep_image,dtype=np.float32)
-    
+    #mask = np.zeros((480,640))
+    #mask[r2:-r2,r2:-r2] = 1
+    #blur = cv2.medianBlur(dep_image, 7)
+    #arr = np.array(blur,dtype=np.float32)
+    #print(arr.shape)
+    #arr = np.array(blur,dtype=np.uint8)
+    arr = np.array(dep_image,dtype=np.float32)
+    arr[0:r2,:] = 0
+    arr[:,0:r2] = 0
+    arr[-r2:,:] = 0
+    arr[:,-r2:] = 0
     #rotate the image about y-axis
     #arr = cv2.flip(arr,1)
     if any(x is None for x in self.tracked[0:2]):
@@ -86,8 +93,13 @@ class tracker:
       #print(len(zz))
       #if len(zz) >= 1:
       #  self.tracked[2] = np.mean(zz)
-      self.tracked[2] = arr[self.tracked[0],self.tracked[1]]
-      location = '{},{},{}'.format(self.tracked[0],self.tracked[1],self.tracked[2])
+      #if arr[self.tracked[0],self.tracked[1]] >20:
+      #  self.tracked[2] = arr[self.tracked[0],self.tracked[1]]
+      #else:
+      #  self.tracked[2] = 1000
+      dep = np.mean(arr)
+      location = '{},{},{}'.format(self.tracked[0],self.tracked[1],dep)
+      #location = '{},{},{}'.format(self.tracked[0],self.tracked[1],self.tracked[2])
       print(location)
       self.coord_pub.publish(location)
 
