@@ -41,17 +41,17 @@ class follower():
                 diff_x = self.tracking_coord[0] - 320
 		print(diff_x)
                 if diff_x > 50:
-                    angular_z_vel = -0.3
+                    angular_z_vel = -0.5
                 if diff_x < -50:
-                    angular_z_vel = 0.3
+                    angular_z_vel = 0.5
                 if diff_x >=-50 and diff_x <=50:
                     angular_z_vel = 0
                 #find out if turtlebot need forward or backward
                 diff_z = self.tracking_coord[2] - 1000
                 if diff_z > 50:
-                    x_vel = 0.06
+                    x_vel = 0.1
                 elif diff_z <-50:
-                    x_vel = -0.06
+                    x_vel = -0.1
                 else:
                     x_vel = 0
                 print("Move foward vel {}, angular vel {}".format(x_vel,angular_z_vel))
