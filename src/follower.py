@@ -55,6 +55,7 @@ class follower():
                 else:
                     x_vel = 0
                 print("Move foward vel {}, angular vel {}".format(x_vel,angular_z_vel))
+		print("The location for turtlebot is {} along x-axis and {} along z-axis".format(diff_x,diff_z)
                 move_cmd.linear.x = x_vel
                 move_cmd.angular.z = angular_z_vel
                 self.cmd_vel.publish(move_cmd)
