@@ -57,7 +57,10 @@ class tracker:
       dep_image = self.bridge.imgmsg_to_cv2(data)
     except CvBridgeError as e:
       print(e)
-    arr = np.array(dep_image,dtype=np.float32)
+    r2 = int(self.tracked[2])
+    blur = cv2.medianBlur(dep_image, r2)
+    arr = np.array(blur,dtype=np.float32)
+    #arr = np.array(dep_image,dtype=np.float32)
     
     #rotate the image about y-axis
     #arr = cv2.flip(arr,1)
