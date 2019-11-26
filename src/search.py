@@ -157,13 +157,12 @@ class ObjectSearch:
             h,w =self.trainImage.shape
             pts = np.float32([[0,0],[0,h-1],[w-1,h-1],[w-1,0]]).reshape(-1,1,2)
             dst = cv2.perspectiveTransform(pts,M)
-            img2 = cv.polylines(cv_image,[np.int32(dst)],True,255,3,cv2.CV_AA)
+            img2 = cv2.polylines(cv_image,[np.int32(dst)],True,255,3,cv2.CV_AA)
         else:
-            print "Not enough matches are found - %d%d" %(len(good),10)
+            print ("Not enough matches are found")
             matchesMask = None
         draw_params = dict(matchColor=(0, 255, 0), singlePointColor=None, mathchesMask=matchesMask, flags=2)
-        img = cv2.drawMatches(
-            self.trainImage, self.kp1, img2, kp2, good, None, **draw_params)
+        img = cv2.drawMatches(self.trainImage, self.kp1, img2, kp2, good, None, **draw_params)
         plt.imshow(img,'gray'),plt.show()
         #cv2.imshow(img)
         #cv2.waitKey(1)
