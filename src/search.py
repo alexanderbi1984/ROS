@@ -12,7 +12,7 @@ from tf.transformations import quaternion_inverse
 from geometry_msgs.msg import Twist
 import math
 import cv2
-from sensor_msgs.msg import CompressedImage
+from sensor_msgs.msg import Image
 import numpy as np
 import threading
 import copy
@@ -42,31 +42,32 @@ class ObjectSearch:
         ]
 
         # Vision
-        self.image = []
+        #self.image = []
         self.processImage = False
         rospack = rospkg.RosPack()    
         self.bridge = CvBridge()
-        self.sift = cv2.SIFT()
+        self.sift = cv2.xfeatures2d.SIFT_create()
         self.trainImageDir = rospack.get_path(
             'BiN') + "/src/IMG_8326.JPG"
         self.trainImage = cv2.imread(self.trainImageDir)
+        self.h, self.w,_ = self.trainImage.shape
         self.kp1, self.des1 = self.sift.detectAndCompute(self.trainImage, None)
 
         self.lock = threading.Lock()
-        self.debugImageDir = rospack.get_path(
-            'assignment_5_completed') + "/images/debug"
-        self.trainImageDir = rospack.get_path(
-            'assignment_5_completed') + "/images/train"
-        self.trainImageNames = [
-            'cereal', 'soup', 'pringles', 'kinect2', 'milk', 'straws', 'dressing']
+        #self.debugImageDir = rospack.get_path(
+        #    'assignment_5_completed') + "/images/debug"
+        #self.trainImageDir = rospack.get_path(
+        #    'assignment_5_completed') + "/images/train"
+        #self.trainImageNames = [
+        #    'cereal', 'soup', 'pringles', 'kinect2', 'milk', 'straws', 'dressing']
 
         # Initialize node
         rospy.init_node('object_search')
 
         # Image subscriber and cv_bridge
-        self.imageTopic = "/camera/rgb/image_raw/compressed"
-        self.imageSub = rospy.Subscriber(
-            self.imageTopic, CompressedImage, self.imageCallback)
+        self.imageTopic = "/camera/rgb/image_raw"
+        #self.imageSub = rospy.Subscriber("/camera/rgb/image_raw",Image,self.callback)
+        self.imageSub = rospy.Subscriber("/camera/rgb/image_raw",Image,self.imageCallback)
         self.debugImageId = 0
 
         # Generate goal poses
@@ -147,25 +148,27 @@ class ObjectSearch:
         matches = flann.knnMatch(self.des1, des2, k=2)
         good = []
         for m,n in matches:
-            if m.distance <0.7*n.dstiance:
+            if m.distance <0.7*n.distance:
                 good.append(m)
         if len(good)>10:
             src_pts = np.float32([self.kp1[m.queryIdx].pt for m in good]).reshape(-1,1,2)
             dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1,1,2)
             M,mask = cv2.findHomography(src_pts,dst_pts,cv2.RANSAC,5.0)
             matchesMask = mask.ravel().tolist()
-            h,w =self.trainImage.shape
-            pts = np.float32([[0,0],[0,h-1],[w-1,h-1],[w-1,0]]).reshape(-1,1,2)
+            #h,w =self.trainImage.shape
+            pts = np.float32([[0,0],[0,self.h-1],[self.w-1,self.h-1],[self.w-1,0]]).reshape(-1,1,2)
             dst = cv2.perspectiveTransform(pts,M)
-            img2 = cv2.polylines(cv_image,[np.int32(dst)],True,255,3,cv2.CV_AA)
+            img2 = cv2.polylines(cv_image,[np.int32(dst)],True,255,3,cv2.LINE_AA)
         else:
             print ("Not enough matches are found")
             matchesMask = None
-        draw_params = dict(matchColor=(0, 255, 0), singlePointColor=None, mathchesMask=matchesMask, flags=2)
+        draw_params = dict(matchColor=(0, 255, 0), singlePointColor=None, matchesMask=matchesMask, flags=2)
         img = cv2.drawMatches(self.trainImage, self.kp1, img2, kp2, good, None, **draw_params)
-        plt.imshow(img,'gray'),plt.show()
-        #cv2.imshow(img)
-        #cv2.waitKey(1)
+        #plt.imshow(img,'gray'),plt.show()
+	#plt.pause(3)
+	cv2.namedWindow("detected object",cv2.WINDOW_NORMAL)
+        cv2.imshow("detected object",img)
+        cv2.waitKey(3)
 
         # # Store it if required
         # self.lock.acquire()
@@ -214,4 +217,8 @@ class ObjectSearch:
 if __name__ == '__main__':
 
     objectSearch = ObjectSearch()
-    objectSearch.run()
+    try:
+        rospy.spin()
+    except KeyboardInterrupt:
+        print("Shutting down")
+    cv2.destroyAllWindows()
