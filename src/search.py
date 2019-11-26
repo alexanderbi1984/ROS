@@ -44,13 +44,15 @@ class ObjectSearch:
         # Vision
         self.image = []
         self.processImage = False
+        rospack = rospkg.RosPack()    
         self.bridge = CvBridge()
         self.sift = cv2.SIFT()
-        self.kp1, self.des1 = self.sift.detectAndCompute(trainimg, None)
+        self.trainImageDir = rospack.get_path(
+            'BiN') + "/src/IMG_8326.JPG"
+        self.trainImage = cv2.imread(self.trainImageDir)
+        self.kp1, self.des1 = self.sift.detectAndCompute(self.trainImage, None)
 
         self.lock = threading.Lock()
-
-        rospack = rospkg.RosPack()
         self.debugImageDir = rospack.get_path(
             'assignment_5_completed') + "/images/debug"
         self.trainImageDir = rospack.get_path(
@@ -135,7 +137,6 @@ class ObjectSearch:
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
         except CvBridgeError as e:
             print(e)
-        trainimg = cv2.imread('')
         kp2, des2 = self.sift.detectAndCompute(cv_image, None)
 
         FLANN_INDEX_KDTREE = 0
@@ -143,19 +144,29 @@ class ObjectSearch:
         search_params = dict(checks=50)
 
         flann = cv2.FlannBasedMatcher(index_params, search_params)
-        matches = flann.knnMatch(des1, des2, k=2)
-        # need to draw only good matches, so create a mask
-        matchesMask = [[0, 0] for i in xrange(len(matches))]
-        # ratio test as Lowe's paper
-        for i, (m, n) in enumerate(matches):
-            if m.distance < 0.7*n.distance:
-                matchesMask[i] = [1, 0]
-        draw_params = dict(matchColor=(0, 255, 0), singlePointColor=(
-            255, 0, 0), mathchesMask=matchesMask, flags=0)
-        img = cv2.drawMatchesKnn(
-            trainimg, kp1, cv_image, kp2, matches, None, **draw_params)
-        cv2.imshow(img)
-        cv2.waitKey(1)
+        matches = flann.knnMatch(self.des1, des2, k=2)
+        good = []
+        for m,n in matches:
+            if m.distance <0.7*n.dstiance:
+                good.append(m)
+        if len(good)>10:
+            src_pts = np.float32([self.kp1[m.queryIdx].pt for m in good]).reshape(-1,1,2)
+            dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1,1,2)
+            M,mask = cv2.findHomography(src_pts,dst_pts,cv2.RANSAC,5.0)
+            matchesMask = mask.ravel().tolist()
+            h,w =self.trainImage.shape
+            pts = np.float32([[0,0],[0,h-1],[w-1,h-1],[w-1,0]]).reshape(-1,1,2)
+            dst = cv2.perspectiveTransform(pts,M)
+            img2 = cv.polylines(cv_image,[np.int32(dst)],True,255,3,cv2.CV_AA)
+        else:
+            print "Not enough matches are found - %d%d" %(len(good),10)
+            matchesMask = None
+        draw_params = dict(matchColor=(0, 255, 0), singlePointColor=None, mathchesMask=matchesMask, flags=2)
+        img = cv2.drawMatches(
+            self.trainImage, self.kp1, img2, kp2, good, None, **draw_params)
+        plt.imshow(img,'gray'),plt.show()
+        #cv2.imshow(img)
+        #cv2.waitKey(1)
 
         # # Store it if required
         # self.lock.acquire()

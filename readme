@@ -1,0 +1,24 @@
+The youtube linke of the demonstration is the following
+https://www.youtube.com/watch?v=8Njw44tLiJE
+
+Please note that my implimentation of the ball tracker does 
+not rely on the color of the ball. You can see it in the video
+I am using a green ball instead of a red one. To track the ball,
+I use the Hough transform on RGB image to detect the circle to
+track the ball. The reason I use RGB raw image is that it is more
+reliable and less noise than the depth raw image.
+
+The tracker node is mainly designed by myself except that the subscriber
+struture is based on the code in the following link.
+https://github.com/jjones646/turtlebot-follower/blob/master/src/turtlebot_gt/src/tracker.py
+The idea on how to obtain the depth information from depth image raw efficiently 
+is my own work which is not seen from any code online.
+
+The follower node is mainly borrowed from the code in the following link.
+https://github.com/jjones646/turtlebot-follower/blob/master/src/turtlebot_gt/src/simple_follower.py
+What I only change is the parameters which best suits for my trakcer node and fix of
+a bug in the following line.
+        coord = [float(x) for x in str(data.data).split(',')]
+The original code is
+        coord = [float(x) for x in str(data).split(',')]
+
