@@ -150,6 +150,7 @@ class ObjectSearch:
         for m,n in matches:
             if m.distance <0.7*n.distance:
                 good.append(m)
+		print(len(good))
         if len(good)>10:
             src_pts = np.float32([self.kp1[m.queryIdx].pt for m in good]).reshape(-1,1,2)
             dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1,1,2)
